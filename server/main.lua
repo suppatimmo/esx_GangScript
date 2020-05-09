@@ -1,22 +1,22 @@
 ESX = nil
 
-TriggerEvent('pz:getSharedObject', function(obj) ESX = obj end)
+TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
-RegisterServerEvent('pz_gangScript:registerSocieties')
-AddEventHandler('pz_gangScript:registerSocieties', function(societyName)
-	TriggerEvent('pz_society:registerSociety', societyName, 'Gang', 'society_' .. societyName, 'society_' .. societyName, 'society_' .. societyName, {type = 'public'})
+RegisterServerEvent('esx_gangScript:registerSocieties')
+AddEventHandler('esx_gangScript:registerSocieties', function(societyName)
+	TriggerEvent('esx_society:registerSociety', societyName, 'Gang', 'society_' .. societyName, 'society_' .. societyName, 'society_' .. societyName, {type = 'public'})
 end)
 
-RegisterServerEvent('pz_gangScript:giveWeapon')
-AddEventHandler('pz_gangScript:giveWeapon', function(weapon, ammo)
+RegisterServerEvent('esx_gangScript:giveWeapon')
+AddEventHandler('esx_gangScript:giveWeapon', function(weapon, ammo)
   local xPlayer = ESX.GetPlayerFromId(source)
   xPlayer.addWeapon(weapon, ammo)
 end)
 
-RegisterServerEvent('pz_gangScript:getStockItem')
-AddEventHandler('pz_gangScript:getStockItem', function(itemName, count, societyName)
+RegisterServerEvent('esx_gangScript:getStockItem')
+AddEventHandler('esx_gangScript:getStockItem', function(itemName, count, societyName)
   local xPlayer = ESX.GetPlayerFromId(source)
-  TriggerEvent('pz_addoninventory:getSharedInventory', 'society_' .. societyName, function(inventory)
+  TriggerEvent('esx_addoninventory:getSharedInventory', 'society_' .. societyName, function(inventory)
 
     local item = inventory.getItem(itemName)
 	local playerItemCount = xPlayer.getInventoryItem(itemName).count
@@ -26,29 +26,29 @@ AddEventHandler('pz_gangScript:getStockItem', function(itemName, count, societyN
 				inventory.removeItem(itemName, count)
 				xPlayer.addInventoryItem(itemName, count)
 			else
-				TriggerClientEvent('pz:showNotification', xPlayer.source, _U('no_space'))	
+				TriggerClientEvent('esx:showNotification', xPlayer.source, _U('no_space'))	
 				return
 			end
 		else
-			TriggerClientEvent('pz:showNotification', xPlayer.source, _U('no_items_stock'))
+			TriggerClientEvent('esx:showNotification', xPlayer.source, _U('no_items_stock'))
 			return
 		end
 	else 
-		TriggerClientEvent('pz:showNotification', xPlayer.source, _U('quantity_invalid'))
+		TriggerClientEvent('esx:showNotification', xPlayer.source, _U('quantity_invalid'))
 		return	
 	end
 	
-    TriggerClientEvent('pz:showNotification', xPlayer.source, _U('have_withdrawn') ..'~g~' .. item.label .. ' ~b~x' .. count)
+    TriggerClientEvent('esx:showNotification', xPlayer.source, _U('have_withdrawn') ..'~g~' .. item.label .. ' ~b~x' .. count)
   end)
 
 end)
 
-RegisterServerEvent('pz_gangScript:putStockItems')
-AddEventHandler('pz_gangScript:putStockItems', function(itemName, count, societyName)
+RegisterServerEvent('esx_gangScript:putStockItems')
+AddEventHandler('esx_gangScript:putStockItems', function(itemName, count, societyName)
 
   local xPlayer = ESX.GetPlayerFromId(source)
 
-  TriggerEvent('pz_addoninventory:getSharedInventory', 'society_' .. societyName, function(inventory)
+  TriggerEvent('esx_addoninventory:getSharedInventory', 'society_' .. societyName, function(inventory)
 
     local item = inventory.getItem(itemName)
 	local playerItemCount = xPlayer.getInventoryItem(itemName).count
@@ -58,22 +58,22 @@ AddEventHandler('pz_gangScript:putStockItems', function(itemName, count, society
 			xPlayer.removeInventoryItem(itemName, count)
 			inventory.addItem(itemName, count)
 		else
-			TriggerClientEvent('pz:showNotification', xPlayer.source, _U('no_items_inventory'))
+			TriggerClientEvent('esx:showNotification', xPlayer.source, _U('no_items_inventory'))
 			return			
 		end
     else
-      TriggerClientEvent('pz:showNotification', xPlayer.source, _U('quantity_invalid'))
+      TriggerClientEvent('esx:showNotification', xPlayer.source, _U('quantity_invalid'))
 	  return
     end
 
-    TriggerClientEvent('pz:showNotification', xPlayer.source, _U('added') .. '~g~' .. item.label .. ' ~b~x' .. count)
+    TriggerClientEvent('esx:showNotification', xPlayer.source, _U('added') .. '~g~' .. item.label .. ' ~b~x' .. count)
 
   end)
 
 end)
 
-ESX.RegisterServerCallback('pz_gangScript:getArmoryWeapons', function(source, cb, societyName)
-	TriggerEvent('pz_datastore:getSharedDataStore', 'society_' .. societyName, function(store)
+ESX.RegisterServerCallback('esx_gangScript:getArmoryWeapons', function(source, cb, societyName)
+	TriggerEvent('esx_datastore:getSharedDataStore', 'society_' .. societyName, function(store)
 		local weapons = store.get('weapons')
 		if weapons == nil then
 			weapons = {}
@@ -83,7 +83,7 @@ ESX.RegisterServerCallback('pz_gangScript:getArmoryWeapons', function(source, cb
 	end)
 end)
 
-ESX.RegisterServerCallback('pz_gangScript:addArmoryWeapon', function(source, cb, societyName, weaponName, removeWeapon)
+ESX.RegisterServerCallback('esx_gangScript:addArmoryWeapon', function(source, cb, societyName, weaponName, removeWeapon)
 	print(societyName)
 	local xPlayer = ESX.GetPlayerFromId(source)
 
@@ -91,7 +91,7 @@ ESX.RegisterServerCallback('pz_gangScript:addArmoryWeapon', function(source, cb,
 		xPlayer.removeWeapon(weaponName)
 	end
 
-	TriggerEvent('pz_datastore:getSharedDataStore', 'society_' .. societyName, function(store)
+	TriggerEvent('esx_datastore:getSharedDataStore', 'society_' .. societyName, function(store)
 		local weapons = store.get('weapons')
 
 		if weapons == nil then
@@ -120,11 +120,11 @@ ESX.RegisterServerCallback('pz_gangScript:addArmoryWeapon', function(source, cb,
 	end)
 end)
 
-ESX.RegisterServerCallback('pz_gangScript:removeArmoryWeapon', function(source, cb, weaponName, societyName)
+ESX.RegisterServerCallback('esx_gangScript:removeArmoryWeapon', function(source, cb, weaponName, societyName)
 	local xPlayer = ESX.GetPlayerFromId(source)
 	xPlayer.addWeapon(weaponName, 500)
 
-	TriggerEvent('pz_datastore:getSharedDataStore', 'society_' .. societyName, function(store)
+	TriggerEvent('esx_datastore:getSharedDataStore', 'society_' .. societyName, function(store)
 
 		local weapons = store.get('weapons')
 
@@ -154,13 +154,13 @@ ESX.RegisterServerCallback('pz_gangScript:removeArmoryWeapon', function(source, 
 	end)
 end)
 
-ESX.RegisterServerCallback('pz_gangScript:getStockItems', function(source, cb, societyName)
-  TriggerEvent('pz_addoninventory:getSharedInventory', 'society_' .. societyName, function(inventory)
+ESX.RegisterServerCallback('esx_gangScript:getStockItems', function(source, cb, societyName)
+  TriggerEvent('esx_addoninventory:getSharedInventory', 'society_' .. societyName, function(inventory)
     cb(inventory.items)
   end)
 end)
 
-ESX.RegisterServerCallback('pz_gangScript:getPlayerInventory', function(source, cb)
+ESX.RegisterServerCallback('esx_gangScript:getPlayerInventory', function(source, cb)
   local xPlayer = ESX.GetPlayerFromId(source)
   local items   = xPlayer.inventory
 
@@ -169,7 +169,7 @@ ESX.RegisterServerCallback('pz_gangScript:getPlayerInventory', function(source, 
   })
 end)
 
-ESX.RegisterServerCallback('pz_gangScript:getSocietyVehicles', function(source, cb, societyName)
+ESX.RegisterServerCallback('esx_gangScript:getSocietyVehicles', function(source, cb, societyName)
 	local xPlayer = ESX.GetPlayerFromId(source)
 	local vehicles = {}
 
@@ -182,20 +182,20 @@ ESX.RegisterServerCallback('pz_gangScript:getSocietyVehicles', function(source, 
 	end)
 end)
 
-RegisterServerEvent('pz_gangScript:updateVehicleState')
-AddEventHandler('pz_gangScript:updateVehicleState', function(plate, state)
+RegisterServerEvent('esx_gangScript:updateVehicleState')
+AddEventHandler('esx_gangScript:updateVehicleState', function(plate, state)
 	MySQL.Async.execute("UPDATE owned_vehicles SET stored = @state WHERE plate=@plate",{['@state'] = state, ['@plate'] = plate})	
 end)
 
-RegisterServerEvent('pz_gangScript:validateCar')
-AddEventHandler('pz_gangScript:validateCar', function(societyName, plate, vehicle)
+RegisterServerEvent('esx_gangScript:validateCar')
+AddEventHandler('esx_gangScript:validateCar', function(societyName, plate, vehicle)
 	local xPlayer = ESX.GetPlayerFromId(source)
 	MySQL.Async.fetchAll("SELECT plate FROM owned_vehicles WHERE job=@societyName AND plate = @plate",{['@societyName'] = societyName, ['@plate'] = plate}, function(data) 
 		if data[1] ~= nil then
 			MySQL.Async.execute("UPDATE owned_vehicles SET stored = 1 WHERE plate=@plate",{['@plate'] = plate})		
-			TriggerClientEvent('pz_gangScript:hideVehicle', xPlayer.source, vehicle)
+			TriggerClientEvent('esx_gangScript:hideVehicle', xPlayer.source, vehicle)
 		else
-			TriggerClientEvent('pz:showNotification', xPlayer.source, _U('store_vehicle_failure'))		
+			TriggerClientEvent('esx:showNotification', xPlayer.source, _U('store_vehicle_failure'))		
 		end
 	end)
 --		

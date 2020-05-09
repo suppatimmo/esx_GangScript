@@ -25,7 +25,7 @@ GUI.Time                        = 0
 
 Citizen.CreateThread(function()
   while ESX == nil do
-    TriggerEvent('pz:getSharedObject', function(obj) ESX = obj end)
+    TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
     Citizen.Wait(0)
   end
   
@@ -34,13 +34,13 @@ Citizen.CreateThread(function()
     end  
 end)
 
-RegisterNetEvent("pz:playerLoaded")
-AddEventHandler("pz:playerLoaded", function(response)
+RegisterNetEvent("esx:playerLoaded")
+AddEventHandler("esx:playerLoaded", function(response)
 	PlayerData = response
 end)
 
-RegisterNetEvent('pz:setJob')
-AddEventHandler('pz:setJob', function(job)
+RegisterNetEvent('esx:setJob')
+AddEventHandler('esx:setJob', function(job)
 	PlayerData.job = job
 end)
 
@@ -48,7 +48,7 @@ Citizen.CreateThread(function()
 
 	for k,v in pairs(Config.Gangs) do
 		if v.JobName ~= nil then
-			TriggerServerEvent('pz_gangScript:registerSocieties', v.JobName)
+			TriggerServerEvent('esx_gangScript:registerSocieties', v.JobName)
 		end
 		if v.Blip ~= nil then
 			local blip = AddBlipForCoord(v.Blip.Pos.x, v.Blip.Pos.y, v.Blip.Pos.z)
@@ -146,7 +146,7 @@ Citizen.CreateThread(function()
 					  (LastStation ~= nil and LastPart ~= nil and LastPartNum ~= nil) and
 					  (LastStation ~= currentStation or LastPart ~= currentPart or LastPartNum ~= currentPartNum)
 					then
-					  TriggerEvent('pz_gangScript:hasExitedMarker', LastStation, LastPart, LastPartNum)
+					  TriggerEvent('esx_gangScript:hasExitedMarker', LastStation, LastPart, LastPartNum)
 					  hasExited = true
 					end
 					
@@ -154,12 +154,12 @@ Citizen.CreateThread(function()
 					LastStation             = currentStation
 					LastPart                = currentPart
 					LastPartNum             = currentPartNum				
-					TriggerEvent('pz_gangScript:hasEnteredMarker', currentStation, currentPart, currentPartNum)	
+					TriggerEvent('esx_gangScript:hasEnteredMarker', currentStation, currentPart, currentPartNum)	
 				end
 
 				if not hasExited and not isInMarker and HasAlreadyEnteredMarker then
 					HasAlreadyEnteredMarker = false
-					TriggerEvent('pz_gangScript:hasExitedMarker', LastStation, LastPart, LastPartNum)
+					TriggerEvent('esx_gangScript:hasExitedMarker', LastStation, LastPart, LastPartNum)
 				end
 				
 				if CurrentAction ~= nil then
@@ -172,7 +172,7 @@ Citizen.CreateThread(function()
 							OpenArmoryMenu(CurrentActionData.station, v.JobName)
 						elseif CurrentAction == 'menu_boss_actions' then		
 							ESX.UI.Menu.CloseAll()
-							TriggerEvent('pz_society:openBossMenu', v.JobName, function(data, menu)
+							TriggerEvent('esx_society:openBossMenu', v.JobName, function(data, menu)
 							menu.close()
 							CurrentAction     = 'menu_boss_actions'
 							CurrentActionMsg  = _U('open_bossmenu')
@@ -182,7 +182,7 @@ Citizen.CreateThread(function()
 							OpenVehicleSpawnerMenu(CurrentActionData.station, CurrentActionData.partNum, v.JobName)
 						elseif CurrentAction == 'delete_vehicle' then
 							local vehicleProps = ESX.Game.GetVehicleProperties(CurrentActionData.vehicle)
-							TriggerServerEvent('pz_gangScript:validateCar',v.JobName, vehicleProps.plate, CurrentActionData.vehicle)
+							TriggerServerEvent('esx_gangScript:validateCar',v.JobName, vehicleProps.plate, CurrentActionData.vehicle)
 						end	
 					CurrentAction = nil
 					GUI.Time      = GetGameTimer()
@@ -197,7 +197,7 @@ end)
 function OpenVehicleSpawnerMenu(station, partNum, societyName)
 
 	local elements = {}
-	ESX.TriggerServerCallback('pz_gangScript:getSocietyVehicles', function(vehicles)
+	ESX.TriggerServerCallback('esx_gangScript:getSocietyVehicles', function(vehicles)
 		for _,v in pairs(vehicles) do
 			local hashVehicule = v.vehicle.model
     		local vehicleName = GetDisplayNameFromVehicleModel(hashVehicule)
@@ -234,7 +234,7 @@ function OpenVehicleSpawnerMenu(station, partNum, societyName)
 end
 
 function SpawnVehicle(vehicle, station, garageNumber)
-	TriggerServerEvent('pz_gangScript:updateVehicleState',  vehicle.plate,0)
+	TriggerServerEvent('esx_gangScript:updateVehicleState',  vehicle.plate,0)
 	ESX.Game.SpawnVehicle(vehicle.model, Config.Gangs[station].Vehicles[garageNumber].SpawnPoint, Config.Gangs[station].Vehicles[garageNumber].Heading, 
 	function(callback_vehicle)
 		ESX.Game.SetVehicleProperties(callback_vehicle, vehicle)
@@ -318,7 +318,7 @@ function OpenArmoryMenu(station, societyName)
 		end
 		
 		local weapon = data.current.value
-		TriggerServerEvent('pz_gangScript:giveWeapon', weapon,  1000)
+		TriggerServerEvent('esx_gangScript:giveWeapon', weapon,  1000)
       end,
       function(data, menu)
         menu.close()
@@ -330,7 +330,7 @@ function OpenArmoryMenu(station, societyName)
 end
 
 function OpenGetWeaponMenu(societyName)
-	ESX.TriggerServerCallback('pz_gangScript:getArmoryWeapons', function(weapons)
+	ESX.TriggerServerCallback('esx_gangScript:getArmoryWeapons', function(weapons)
 		local elements = {}
 
 		for i=1, #weapons, 1 do
@@ -349,7 +349,7 @@ function OpenGetWeaponMenu(societyName)
 		}, function(data, menu)
 			menu.close()
 
-			ESX.TriggerServerCallback('pz_gangScript:removeArmoryWeapon', function()
+			ESX.TriggerServerCallback('esx_gangScript:removeArmoryWeapon', function()
 			OpenGetWeaponMenu(societyName)
 			end, data.current.value, societyName)
 		end, function(data, menu)
@@ -381,7 +381,7 @@ function OpenPutWeaponMenu(societyName)
 	}, function(data, menu)
 		menu.close()
 
-		ESX.TriggerServerCallback('pz_gangScript:addArmoryWeapon', function()
+		ESX.TriggerServerCallback('esx_gangScript:addArmoryWeapon', function()
 		OpenPutWeaponMenu(societyName)
 		end, societyName, data.current.value, true)
 	end, function(data, menu)
@@ -390,7 +390,7 @@ function OpenPutWeaponMenu(societyName)
 end
 
 function OpenGetStocksMenu(societyName)
-  ESX.TriggerServerCallback('pz_gangScript:getStockItems', function(items)
+  ESX.TriggerServerCallback('esx_gangScript:getStockItems', function(items)
     local elements = {}
     for i=1, #items, 1 do
 		if items[i].count > 0 then 
@@ -423,7 +423,7 @@ function OpenGetStocksMenu(societyName)
             else
               menu2.close()
               menu.close()
-              TriggerServerEvent('pz_gangScript:getStockItem', itemName, count, societyName)
+              TriggerServerEvent('esx_gangScript:getStockItem', itemName, count, societyName)
               OpenGetStocksMenu(societyName)			  
             end
 
@@ -443,7 +443,7 @@ end
 
 function OpenPutStocksMenu(societyName)
 
-  ESX.TriggerServerCallback('pz_gangScript:getPlayerInventory', function(inventory)
+  ESX.TriggerServerCallback('esx_gangScript:getPlayerInventory', function(inventory)
 
     local elements = {}
 
@@ -482,7 +482,7 @@ function OpenPutStocksMenu(societyName)
             else
 				menu2.close()
 				menu.close()
-				TriggerServerEvent('pz_gangScript:putStockItems', itemName, count, societyName)
+				TriggerServerEvent('esx_gangScript:putStockItems', itemName, count, societyName)
 				OpenPutStocksMenu(societyName)
             end
           end,
@@ -499,7 +499,7 @@ function OpenPutStocksMenu(societyName)
   end)
 end
 
-AddEventHandler('pz_gangScript:hasEnteredMarker', function(station, part, partNum)
+AddEventHandler('esx_gangScript:hasEnteredMarker', function(station, part, partNum)
   if part == 'Armory' then
     CurrentAction     = 'menu_armory'
     CurrentActionMsg  = _U('open_armory')
@@ -534,12 +534,12 @@ AddEventHandler('pz_gangScript:hasEnteredMarker', function(station, part, partNu
 
 end)
 
-AddEventHandler('pz_gangScript:hasExitedMarker', function(station, part, partNum)
+AddEventHandler('esx_gangScript:hasExitedMarker', function(station, part, partNum)
   ESX.UI.Menu.CloseAll()
   CurrentAction = nil
 end)
 
-RegisterNetEvent("pz_gangScript:hideVehicle")
-AddEventHandler('pz_gangScript:hideVehicle', function(vehicle)
+RegisterNetEvent("esx_gangScript:hideVehicle")
+AddEventHandler('esx_gangScript:hideVehicle', function(vehicle)
 	ESX.Game.DeleteVehicle(vehicle)
 end)
