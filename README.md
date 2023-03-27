@@ -1,5 +1,7 @@
 # esx_gangScript - FXSERVER
 
+This project is NOT supported, I don't have time for it.
+
 [REQUIREMENTS]
 
 * Auto mode
